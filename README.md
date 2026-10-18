@@ -1,350 +1,128 @@
 # 🏦 Bank Management System V2 — With Permissions
 
-A **C++ Console-Based Bank Management System** designed to manage client accounts, financial transactions, and user access through a permission-based authorization system.
+A console-based Bank Management System built with C++. The project simulates everyday banking administration tasks, including client records, deposits and withdrawals, user management, and permission-based access control. Data is stored locally in text files, so the application does not require a database server.
+🎯 Project goal: Practice core C++ programming concepts by building a menu-driven application with file handling, structured records, CRUD operations, input validation, and role/permission checks.
 
-This version focuses on **user management, granular permissions, secure operation checks, and persistent file storage**, making it more than a basic client management application.
-
----
-
-## 📌 Table of Contents
-
-- [🚀 Overview](#-overview)
-- [✨ Features](#-features)
-- [🔐 Authentication and Authorization](#-authentication-and-authorization)
-- [🧮 Permission System](#-permission-system)
-- [👥 Client Management](#-client-management)
-- [💰 Financial Transactions](#-financial-transactions)
-- [👤 User Management](#-user-management)
-- [📂 Data Storage](#-data-storage)
-- [🛠️ Technologies Used](#️-technologies-used)
-- [📁 Project Structure](#-project-structure)
-- [▶️ Getting Started](#️-getting-started)
-- [🔑 Initial Admin Account](#-initial-admin-account)
-- [⚠️ Security Notes](#️-security-notes)
-- [🔮 Future Improvements](#-future-improvements)
-- [👩‍💻 Author](#-author)
-
----
-
-## 🚀 Overview
-
-The Bank Management System V2 is a console application developed using **C++** to simulate essential banking operations and demonstrate practical programming concepts.
-
-Unlike a basic client management program, this version includes a dedicated **user authentication and permission system** that controls which operations each user can perform.
-
-The application supports:
-
-- Managing client records.
-- Processing deposits and withdrawals.
-- Calculating total client balances.
-- Creating and managing system users.
-- Assigning full or customized permissions.
-- Saving and retrieving data using text files.
-
-The project emphasizes structured programming, reusable functions, input validation, file handling, and bitwise operations.
-
-## ✨ Features
-
-### 🏦 Client Management
-
-- 📋 Display all client records in a formatted table.
-- ➕ Add new client accounts.
-- ✏️ Update existing client information.
-- 🗑️ Delete client accounts after confirmation.
-- 🔎 Search for a client by account number.
+✨ Features
+👥 Client Management
+- 📋 Display a formatted list of clients.
+- ➕ Add a new client.
+- 🔎 Find a client using their account number.
+- ✏️ Update client details.
+- 🗑️ Delete a client after confirmation.
 - 🚫 Prevent duplicate account numbers.
-- 💵 Validate non-negative opening balances.
-
-### 💰 Financial Transactions
-
-- 📥 Deposit money into a client account.
-- 📤 Withdraw money from a client account.
-- 🛑 Prevent withdrawals that exceed the available balance.
-- ✅ Require confirmation before processing transactions.
-- 💳 Display the updated balance after a successful transaction.
-- 📊 Calculate and display the total balances of all clients.
-
-### 👥 User Management
-
-- 📋 List registered system users.
+- 💾 Save client records to a local text file.
+💳 Banking Transactions
+- 💰 Deposit money into a client account.
+- 💸 Withdraw money from a client account.
+- 🧮 Display every client's balance and calculate the total balance across accounts.
+- ✅ Ask for confirmation before completing a transaction.
+- 🛡️ Validate transaction amounts and prevent withdrawals greater than the available balance.
+🔐 User Management
+- 📋 List registered users.
 - ➕ Add new users.
-- ✏️ Update user passwords and permissions.
+- 🔎 Find users by username.
+- ✏️ Update a user's password and permissions.
 - 🗑️ Delete users after confirmation.
-- 🔍 Find users by username.
 - 🚫 Prevent duplicate usernames.
-- 🛡️ Prevent users from deleting their own currently logged-in account.
-- 🔑 Assign full access or individual permissions.
-
-### 🧰 Input Validation and User Experience
-
-- Validate menu choices and reject out-of-range input.
-- Handle invalid numeric input.
-- Validate transaction amounts.
-- Display clear success and error messages.
-- Ask for confirmation before destructive operations.
-- Provide separate menus for banking transactions and user management.
-
----
-
-## 🔐 Authentication and Authorization
-
-The application implements a login system that validates the entered username and password against the stored user records.
-
-After successful authentication, the logged-in user's information is stored in the `CurrentUser` variable and used to determine access rights.
-
-Before performing protected operations, the application checks the current user's permissions.
-
-If the user lacks the required permission, the operation is denied and an access-denied message is displayed.
-
-**Authentication** answers: *Who is logging in?*
-
-**Authorization** answers: *What is this user allowed to do?*
-
-## 🧮 Permission System
-
-One of the main features of this version is its use of **bitwise operators to manage individual permissions**.
-
-Each permission is represented by a different bit flag:
-
-| Permission | Value | Description |
-|---|---:|---|
-| `pListClients` | `1` | Display the client list |
-| `pAddNewClient` | `2` | Add new clients |
-| `pDeleteClient` | `4` | Delete clients |
-| `pUpdateClient` | `8` | Update client information |
-| `pFindClient` | `16` | Search for clients |
-| `pTransactions` | `32` | Access financial transactions |
-| `pManageUsers` | `64` | Manage system users |
-| `eAll` | `-1` | Full access |
-
-### ⚙️ How It Works
-
-The application uses bitwise OR (`|`) to combine permissions and bitwise AND (`&`) to check whether a user has a required permission.
-
-For example:
-
-```cpp
-int Permissions = 0;
-
-Permissions |= pListClients;
-Permissions |= pTransactions;
-```
-
-This grants permission to view clients and perform transactions.
-
-The access check is implemented as follows:
-
-```cpp
-bool CheckAccessPermission(int Permission)
-{
-    if (CurrentUser.Permission == eAll)
-        return true;
-
-    return (CurrentUser.Permission & Permission) == Permission;
-}
-```
-
-This design allows each user to receive a customized set of permissions without requiring a separate Boolean variable for every permission.
-
-The `RequirePermission()` function checks access before protected operations and displays an error message when permission is denied.
-
-### 🛡️ Full Access or Customized Access
-
-When creating or updating a user, the administrator can choose between:
-
-- **Full Access:** Grants all permissions.
-- **Customized Access:** Allows individual permissions to be selected independently.
-
-This demonstrates how bit flags can be used to implement a lightweight permission system in C++.
-
----
-
-## 👥 Client Management
-
-Client records contain the following information:
-
-- Account Number
-- Full Name
-- PIN Code
-- Phone Number
-- Account Balance
-
-The application loads client records into a `vector<stClient>` when performing operations.
-
-Client lookup is performed using the account number, and changes are persisted to `Clients.txt`.
-
-## 💰 Financial Transactions
-
-The application supports deposits and withdrawals through a dedicated Transactions Menu.
-
-### Deposit
-
-1. Find the client by account number.
-2. Display the client's current information.
-3. Enter a transaction amount.
-4. Validate the amount.
-5. Confirm the operation.
-6. Save the updated balance.
-
-### Withdrawal
-
-1. Find the client by account number.
-2. Display the current balance.
-3. Enter a withdrawal amount.
-4. Validate the amount.
-5. Ensure the withdrawal does not exceed the available balance.
-6. Confirm the operation and save the new balance.
-
-### Total Balances
-
-The application displays each client's account number, name, and balance, then calculates the combined balance of all client accounts.
-
----
-
-## 👤 User Management
-
-User records contain:
-
-- Username
-- Password
-- Permission flags
-
-The user management menu provides operations for listing, adding, updating, deleting, and searching users.
-
-For privacy in console output, passwords are displayed as asterisks when showing user records. However, passwords are currently stored as plain text in the data file; see the security notes below.
-
-The application also prevents deletion of the currently logged-in user to avoid removing the active account during a session.
-
-## 📂 Data Storage
-
-This project uses **text-file storage** rather than a database.
-
-| File | Purpose |
-|---|---|
-| `Clients.txt` | Stores client account records |
-| `Users.txt` | Stores user credentials and permission values |
-
-Records use the custom separator:
-
-```text
-#//
-```
-
-More precisely, the separator used by the application is:
-
-```text
-#//
-```
-
-The application reads and parses records using `SplitString()`, converts them into structures, and writes updates back to the files.
-
-The project uses `ifstream` for reading and `ofstream` for writing and appending records.
-
-### 💾 Data Persistence
-
-Data remains available between application runs because client and user records are stored in files on disk.
-
-The program also checks for invalid records and skips records that cannot be parsed successfully.
-
----
-
-## 🛠️ Technologies Used
-
-- **C++** — Core application logic.
-- **Standard Template Library (STL)** — `vector` and `string`.
-- **File Handling** — `ifstream` and `ofstream`.
-- **Bitwise Operators** — Permission flags and access checks.
-- **Structures and Enumerations** — Organized data models and menu options.
-- **Input Validation** — Reliable handling of user input.
-- **Visual Studio** — Project development and execution.
-
-## 📁 Project Structure
-
-```text
-BankManagementSystemV2-With-Permissions/
-│
-├── BankManagementSystemV2.cpp
-├── BankManagementSystemV2.sln
-├── BankManagementSystemV2.vcxproj
-├── BankManagementSystemV2.vcxproj.filters
-├── Clients.txt
-├── Users.txt
-├── .gitignore
-└── README.md
-```
-
-## ▶️ Getting Started
-
-### Prerequisites
-
-- Windows.
-- Visual Studio with the C++ desktop development workload.
-- A compatible C++ compiler.
-
-### Run Using Visual Studio
-
-1. Clone or download the repository.
-2. Open `BankManagementSystemV2.sln` in Visual Studio.
-3. Select a suitable build configuration, such as `Debug` or `Release`.
-4. Build the solution.
-5. Run the application.
-
-### Clone the Repository
-
-```bash
-git clone https://github.com/Sarah-Nabil/BankManagementSystemV2-With-Permissions.git
-```
-
-Navigate to the project directory and open the solution file in Visual Studio.
-
-## 🔑 Initial Admin Account
-
-When `Users.txt` contains no valid user records, the application creates an initial administrator account.
-
-| Field | Value |
-|---|---|
-| Username | `admin` |
-| Password | `1234` |
-| Permissions | Full access |
-
-**Important:** These are default learning-project credentials. Change them before using the application with any sensitive data.
-
-## ⚠️ Security Notes
-
-This project is intended for **educational purposes** and is not suitable for production banking.
-
-Current limitations include:
-
-- Passwords are stored as plain text in `Users.txt`.
-- Client PIN codes are stored as plain text in `Clients.txt`.
-- The default administrator credentials are predictable.
-- File-based storage does not provide database transactions or concurrent-access protection.
-- Permission checks are implemented within the application and are not a substitute for production-grade security controls.
-- Financial operations are simulated and do not connect to real banking infrastructure.
-
-The project demonstrates permission-based access control concepts, but it should not be used to store real financial information or real credentials.
-
-## 🔮 Future Improvements
-
-Potential enhancements include:
-
-- 🔒 Hash passwords using a suitable password-hashing algorithm.
-- 🗄️ Replace text files with a database.
-- 🧾 Introduce transaction history and audit logs.
-- 🧱 Refactor the application into separate modules and classes.
-- 🧪 Add automated unit tests.
-- 💱 Add transfer operations between client accounts.
-- 📅 Add transaction timestamps and reports.
-- 🛡️ Strengthen authorization and input validation.
-
-## 👩‍💻 Author
-
-**Sarah Nabil**
-
-GitHub: [Sarah-Nabil](https://github.com/Sarah-Nabil)
-
-### ⭐ Support
-
+- 🔒 Hide passwords in user-list displays.
+- 🛑 Prevent deleting the currently logged-in user.
+🧩 Permission-Based Access Control
+Users can be assigned full access or selected permissions. The application checks permissions before protected operations.
+Permission	Value	Allows the user to
+pListClients	1	View the client list
+pAddNewClient	2	Add clients
+pDeleteClient	4	Delete clients
+pUpdateClient	8	Update clients
+pFindClient	16	Find clients
+pTransactions	32	Access deposits, withdrawals, and total balances
+pManageUsers	64	Manage users
+eAll	-1	Full access
+
+
+The permission values are bit flags. They can be combined to grant a user more than one permission.
+✅ Input and File Handling
+- Checks menu choices and re-prompts when a choice is invalid.
+- Validates that entered amounts are non-negative and that transaction amounts are greater than zero.
+- Handles file-opening and file-writing failures with error messages.
+- Skips malformed records when loading client or user data.
+- Uses reusable helper functions for reading input, splitting records, converting records, and saving data.
+🛠️ Technologies and Concepts
+- Language: C++
+- Application type: Console application
+- Standard libraries: <iostream>, <string>, <vector>, <fstream>, <iomanip>, <limits>, and <cstdlib>
+- Core concepts practiced:
+  - Structures (struct)
+  - Enumerations (enum)
+  - Functions and reusable helper methods
+  - Vectors and record searching
+  - File input/output (ifstream, ofstream)
+  - String parsing and record serialization
+  - Bitwise operations for permissions
+  - Input validation and exception handling
+  - Menu-driven program flow
+📁 Data Files
+The application uses two text files in its current working directory:
+Clients.txt
+Stores client data in this field order:
+AccountNumber#//#Name#//#PinCode#//#Phone#//#AccountBalance
+Example record:
+1001#//#Ahmed Ali#//#1234#//#01000000000#//#2500.000000
+Users.txt
+Stores user data in this field order:
+UserName#//#Password#//#Permission
+Example record:
+admin#//#1234#//#-1
+The delimiter used between fields is #//#. Do not change the delimiter or field order unless you also update the parsing and saving functions.
+💡 If Users.txt has no valid user records, the application attempts to create an initial administrator account automatically.
+
+🚀 Getting Started
+Requirements
+- A C++ compiler.
+- Visual Studio on Windows, or another C++ development environment that supports standard C++.
+Run with Visual Studio
+1. Open the project in Visual Studio.
+2. Make sure the source file is included in the project.
+3. Build the solution using Build → Build Solution or press Ctrl + Shift + B.
+4. Run without debugging using Ctrl + F5.
+5. On the first run, if no valid user is found, the application creates the default administrator account described below.
+Initial Administrator Account
+When the user file is empty or contains no valid user records, the program attempts to create:
+- Username: admin
+- Password: 1234
+- Permissions: Full access
+After launching, sign in with those credentials if the initial account was created successfully. The files are created relative to the program's working directory, which may differ from the folder containing the .cpp source file. In Visual Studio, check the project's debugging/working-directory settings if you cannot find the text files.
+🧭 How to Use the Application
+After signing in, use the main menu to choose an operation:
+1. Show client list — view saved client records.
+2. Add new client — enter a unique account number and the client's details.
+3. Delete client — find a client and confirm deletion.
+4. Update client — edit the selected client's information.
+5. Find client — search by account number.
+6. Transactions — choose deposit, withdrawal, or total balances.
+7. Manage users — list, add, delete, update, or find users if your account has permission.
+8. Logout — return to the login flow.
+Menu options and protected actions are checked against the current user's permissions.
+🔒 Security Notes
+This is an educational project, not a production banking system.
+- ⚠️ Passwords are stored as plain text in Users.txt; they are not hashed or encrypted.
+- ⚠️ The default administrator credentials are predictable. Change them before sharing a working copy, and do not use them for real accounts.
+- ⚠️ PIN codes and financial data are stored in local text files without encryption.
+- ⚠️ Permission checks in a console application are a learning demonstration, not a substitute for production-grade authentication, secure storage, auditing, or database access controls.
+- ✅ Do not store real customer or banking information in this project.
+For a production application, use a database, password hashing, stronger authentication, secure secret management, transaction integrity, and appropriate audit logging.
+🗺️ Possible Future Improvements
+- 🗄️ Replace text-file storage with SQL Server or another database.
+- 🔐 Hash passwords using a suitable password-hashing algorithm.
+- 🧾 Add transaction history and audit logs.
+- 🧪 Add unit tests for permission checks, record parsing, and transaction validation.
+- 📊 Add reports and date-based transaction summaries.
+- 🧰 Separate the code into modules or classes to improve maintainability.
+- 💱 Add currency support and account statements.
+👩‍💻 About the Project
+Bank Management System — C++ is a learning project focused on practicing C++ fundamentals through a small, interactive banking workflow. It combines client CRUD operations, transaction handling, local file persistence, and permission-controlled user features in one console application.
+📄 License
+No license has been specified for this project yet. Add a license file if you intend to define how others may use, modify, or distribute the code.
 If you find this project useful for learning C++ programming, file handling, or bitwise permission systems, feel free to explore the repository and give it a star!
 
 ---
